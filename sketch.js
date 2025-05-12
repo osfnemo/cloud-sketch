@@ -5,7 +5,7 @@ let cols, rows;
 let tileSize = 24;
 
 function preload() {
-  img = loadImage("cloud.png?v=6");
+  img = loadImage("cloud.png?v=5");
 }
 
 function setup() {
@@ -34,8 +34,8 @@ function initTiles() {
       let tile = createImage(tileSize, tileSize);
       tile.copy(
         img,
-        Math.floor(x * tileSize),
-        Math.floor(y * tileSize),
+        x * tileSize,
+        y * tileSize,
         tileSize,
         tileSize,
         0,
@@ -57,7 +57,7 @@ function initTiles() {
 }
 
 function draw() {
-  background(0, 0); // Transparent full clear (fix flicker)
+  clear();
 
   for (let t of tiles) {
     let dx = t.x + tileSize / 2 - mouseX;
@@ -83,6 +83,6 @@ function draw() {
     t.x += t.vx;
     t.y += t.vy;
 
-    image(t.img, Math.round(t.x), Math.round(t.y)); // precise draw
+    image(t.img, int(t.x), int(t.y));
   }
 }
