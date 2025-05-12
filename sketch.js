@@ -13,7 +13,7 @@ let chordPlayed = false;
 let jazzChord;
 
 function preload() {
-  img = loadImage("cloud.png?v=15");
+  img = loadImage("cloud.png?v=16");
   soundFormats('mp3', 'wav');
   jazzChord = loadSound('jazz_chord.wav');
 }
@@ -93,22 +93,22 @@ function draw() {
       let dy = t.y + tileSize / 2 - my;
       let d = sqrt(dx * dx + dy * dy);
 
-      if (d < 180) {
+      if (d < 80) {
         let angle = atan2(dy, dx);
-        let force = easeOutExpo(map(d, 0, 180, 24, 0)) * fade;
+        let force = easeOutExpo(map(d, 0, 80, 36, 0)) * fade;
         t.vx += cos(angle) * force;
         t.vy += sin(angle) * force;
       }
     }
 
-    let ax = (t.ox - t.x) * 0.1;
-    let ay = (t.oy - t.y) * 0.1;
+    let ax = (t.ox - t.x) * 0.12;
+    let ay = (t.oy - t.y) * 0.12;
 
     t.vx += ax;
     t.vy += ay;
 
-    t.vx *= 0.86;
-    t.vy *= 0.86;
+    t.vx *= 0.88;
+    t.vy *= 0.88;
 
     t.x += t.vx;
     t.y += t.vy;
