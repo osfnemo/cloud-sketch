@@ -4,9 +4,12 @@ let tiles = [];
 let cols, rows;
 let tileSize = 24;
 let lastMoved = 0;
+let mouseActive = false;
+let sweepProgress = 0;
+let sweepDone = false;
 
 function preload() {
-  img = loadImage("cloud.png?v=9");
+  img = loadImage("cloud.png?v=10");
 }
 
 function setup() {
@@ -23,6 +26,8 @@ function windowResized() {
 
 function mouseMoved() {
   lastMoved = millis();
+  mouseActive = true;
+  sweepDone = true; // cancel sweep once user interacts
 }
 
 function initTiles() {
@@ -30,7 +35,7 @@ function initTiles() {
   cols = int(img.width / tileSize);
   rows = int(img.height / tileSize);
   imageMode(CORNER);
-  
+
   let offsetX = (width - img.width) / 2;
   let offsetY = (height - img.height) / 2;
 
@@ -53,20 +58,33 @@ function initTiles() {
 function draw() {
   clear();
 
+  // Simulate a downward sweep on load before interaction
+  if (!mouseActive && !sweepDone && sweepProgress < height + 200) {
+    sweepProgress += 8;
+  } else {
+    sweepDone = true;
+  }
+
   let mx = constrain(mouseX, 0, width);
   let my = constrain(mouseY, 0, height);
   let fade = constrain(map(millis() - lastMoved, 0, 1200, 1, 0), 0, 1);
 
   for (let t of tiles) {
-    let dx = t.x + tileSize / 2 - mx;
-    let dy = t.y + tileSize / 2 - my;
-    let d = sqrt(dx * dx + dy * dy);
+    if (!sweepDone) {
+      if (t.y < sweepProgress) {
+        t.vy += 4;
+      }
+    } else if (mouseActive) {
+      let dx = t.x + tileSize / 2 - mx;
+      let dy = t.y + tileSize / 2 - my;
+      let d = sqrt(dx * dx + dy * dy);
 
-    if (d < 150) {
-      let angle = atan2(dy, dx);
-      let force = map(d, 0, 150, 10, 0) * fade;
-      t.vx += cos(angle) * force;
-      t.vy += sin(angle) * force;
+      if (d < 150) {
+        let angle = atan2(dy, dx);
+        let force = map(d, 0, 150, 10, 0) * fade;
+        t.vx += cos(angle) * force;
+        t.vy += sin(angle) * force;
+      }
     }
 
     let ax = (t.ox - t.x) * 0.08;
