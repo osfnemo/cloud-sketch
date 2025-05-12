@@ -5,11 +5,11 @@ let cols, rows;
 let tileSize = 24;
 
 function preload() {
-  img = loadImage("cloud.png?v=4");
+  img = loadImage("cloud.png?v=3");
 }
 
 function setup() {
-  pixelDensity(1);
+  pixelDensity(1); // prevent retina subpixel rendering gaps
   createCanvas(windowWidth, windowHeight);
   cols = floor(img.width / tileSize);
   rows = floor(img.height / tileSize);
@@ -36,7 +36,7 @@ function setup() {
 }
 
 function draw() {
-  clear();
+  clear(); // transparent background
 
   for (let t of tiles) {
     let dx = t.x + tileSize / 2 - mouseX;
@@ -50,6 +50,7 @@ function draw() {
       t.vy += sin(angle) * force;
     }
 
+    // Spring return to original position
     let ax = (t.ox - t.x) * 0.1;
     let ay = (t.oy - t.y) * 0.1;
 
@@ -62,11 +63,6 @@ function draw() {
     t.x += t.vx;
     t.y += t.vy;
 
-    push();
-    drawingContext.beginPath();
-    drawingContext.roundRect(t.x, t.y, tileSize, tileSize, 6);
-    drawingContext.clip();
     image(t.img, t.x, t.y);
-    pop();
   }
 }
