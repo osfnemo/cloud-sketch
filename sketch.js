@@ -5,13 +5,23 @@ let cols, rows;
 let tileSize = 24;
 
 function preload() {
-  img = loadImage("cloud.png?v=5");
+  img = loadImage("cloud.png?v=6");
 }
 
 function setup() {
-  pixelDensity(1);     // Prevent high-DPI scaling gaps
-  noSmooth();          // Disable anti-aliasing
+  pixelDensity(1);
+  noSmooth();
   createCanvas(windowWidth, windowHeight);
+  initTiles();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  initTiles();
+}
+
+function initTiles() {
+  tiles = [];
   cols = int(img.width / tileSize);
   rows = int(img.height / tileSize);
   imageMode(CORNER);
@@ -24,8 +34,8 @@ function setup() {
       let tile = createImage(tileSize, tileSize);
       tile.copy(
         img,
-        x * tileSize,
-        y * tileSize,
+        Math.floor(x * tileSize),
+        Math.floor(y * tileSize),
         tileSize,
         tileSize,
         0,
@@ -47,7 +57,7 @@ function setup() {
 }
 
 function draw() {
-  clear();
+  background(0, 0); // Transparent full clear (fix flicker)
 
   for (let t of tiles) {
     let dx = t.x + tileSize / 2 - mouseX;
@@ -73,6 +83,6 @@ function draw() {
     t.x += t.vx;
     t.y += t.vy;
 
-    image(t.img, int(t.x), int(t.y)); // Force integer draw positions
+    image(t.img, Math.round(t.x), Math.round(t.y)); // precise draw
   }
 }
