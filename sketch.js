@@ -13,6 +13,8 @@ function setup() {
   cols = floor(img.width / tileSize);
   rows = floor(img.height / tileSize);
   imageMode(CORNER);
+  pixelDensity(1);
+
   
   let offsetX = (width - img.width) / 2;
   let offsetY = (height - img.height) / 2;
