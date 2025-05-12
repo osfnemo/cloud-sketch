@@ -5,24 +5,23 @@ let cols, rows;
 let tileSize = 24;
 
 function preload() {
-  img = loadImage("cloud.png");
+  img = loadImage("cloud.png?v=3");
 }
 
 function setup() {
+  pixelDensity(1); // prevent retina subpixel rendering gaps
   createCanvas(windowWidth, windowHeight);
   cols = floor(img.width / tileSize);
   rows = floor(img.height / tileSize);
   imageMode(CORNER);
-  pixelDensity(1);
-
   
   let offsetX = (width - img.width) / 2;
   let offsetY = (height - img.height) / 2;
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
- let tile = createImage(tileSize, tileSize);
-tile.copy(img, x * tileSize, y * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
+      let tile = createImage(tileSize, tileSize);
+      tile.copy(img, x * tileSize, y * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
       tiles.push({
         img: tile,
         x: x * tileSize + offsetX,
