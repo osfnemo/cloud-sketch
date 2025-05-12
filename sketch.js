@@ -5,15 +5,17 @@ let cols, rows;
 let tileSize = 24;
 let lastMoved = 0;
 let mouseActive = false;
-let sweepProgress = 0;
-let sweepDuration = 120; // number of frames to run sweep
 let sweepFrame = 0;
 let sweepDone = false;
 let sweepTriggered = false;
 let sweepStartTime;
+let chordPlayed = false;
+let jazzChord;
 
 function preload() {
-  img = loadImage("cloud.png?v=12");
+  img = loadImage("cloud.png?v=13");
+  soundFormats('mp3', 'wav');
+  jazzChord = loadSound('jazz_chord.mp3');
 }
 
 function setup() {
@@ -21,7 +23,7 @@ function setup() {
   noSmooth();
   createCanvas(windowWidth, windowHeight);
   initTiles();
-  sweepStartTime = millis(); // record when to begin sweep timer
+  sweepStartTime = millis();
 }
 
 function windowResized() {
@@ -31,8 +33,12 @@ function windowResized() {
 
 function mouseMoved() {
   lastMoved = millis();
+  if (!mouseActive && jazzChord && !chordPlayed) {
+    jazzChord.play();
+    chordPlayed = true;
+  }
   mouseActive = true;
-  sweepDone = true; // immediately end sweep
+  sweepDone = true;
 }
 
 function initTiles() {
@@ -63,15 +69,13 @@ function initTiles() {
 function draw() {
   clear();
 
-  // Begin sweep only after 2 seconds (2000ms)
   if (!mouseActive && !sweepTriggered && millis() - sweepStartTime > 2000) {
     sweepTriggered = true;
   }
 
-  // Animate sweep after delay
   if (sweepTriggered && !sweepDone) {
     sweepFrame++;
-    if (sweepFrame > sweepDuration) {
+    if (sweepFrame > 120) {
       sweepDone = true;
     }
   }
@@ -82,9 +86,8 @@ function draw() {
 
   for (let t of tiles) {
     if (!sweepDone && sweepTriggered) {
-      // Downward sweep triggered after delay
       let wave = sin((t.oy / height) * PI + sweepFrame * 0.1);
-      t.vy += wave * 2;
+      t.vy += wave * 1.5;
     } else if (mouseActive) {
       let dx = t.x + tileSize / 2 - mx;
       let dy = t.y + tileSize / 2 - my;
@@ -92,24 +95,28 @@ function draw() {
 
       if (d < 150) {
         let angle = atan2(dy, dx);
-        let force = map(d, 0, 150, 10, 0) * fade;
+        let force = easeOutExpo(map(d, 0, 150, 10, 0)) * fade;
         t.vx += cos(angle) * force;
         t.vy += sin(angle) * force;
       }
     }
 
-    let ax = (t.ox - t.x) * 0.08;
-    let ay = (t.oy - t.y) * 0.08;
+    let ax = (t.ox - t.x) * 0.1;
+    let ay = (t.oy - t.y) * 0.1;
 
     t.vx += ax;
     t.vy += ay;
 
-    t.vx *= 0.85;
-    t.vy *= 0.85;
+    t.vx *= 0.88;
+    t.vy *= 0.88;
 
     t.x += t.vx;
     t.y += t.vy;
 
     image(t.img, t.x, t.y);
   }
+}
+
+function easeOutExpo(x) {
+  return x === 1 ? 1 : 1 - pow(2, -10 * x);
 }
