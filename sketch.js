@@ -13,9 +13,9 @@ let chordPlayed = false;
 let jazzChord;
 
 function preload() {
-  img = loadImage("cloud.png?v=13");
+  img = loadImage("cloud.png?v=14");
   soundFormats('mp3', 'wav');
-  jazzChord = loadSound('jazz_chord.mp3');
+  jazzChord = loadSound('jazz_chord.wav');
 }
 
 function setup() {
@@ -95,7 +95,7 @@ function draw() {
 
       if (d < 150) {
         let angle = atan2(dy, dx);
-        let force = easeOutExpo(map(d, 0, 150, 10, 0)) * fade;
+        let force = easeOutExpo(map(d, 0, 150, 14, 0)) * fade;
         t.vx += cos(angle) * force;
         t.vy += sin(angle) * force;
       }
