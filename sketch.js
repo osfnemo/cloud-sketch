@@ -5,14 +5,15 @@ let cols, rows;
 let tileSize = 24;
 
 function preload() {
-  img = loadImage("cloud.png?v=3");
+  img = loadImage("cloud.png?v=5");
 }
 
 function setup() {
-  pixelDensity(1); // prevent retina subpixel rendering gaps
+  pixelDensity(1);     // Prevent high-DPI scaling gaps
+  noSmooth();          // Disable anti-aliasing
   createCanvas(windowWidth, windowHeight);
-  cols = floor(img.width / tileSize);
-  rows = floor(img.height / tileSize);
+  cols = int(img.width / tileSize);
+  rows = int(img.height / tileSize);
   imageMode(CORNER);
   
   let offsetX = (width - img.width) / 2;
@@ -21,7 +22,17 @@ function setup() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       let tile = createImage(tileSize, tileSize);
-      tile.copy(img, x * tileSize, y * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
+      tile.copy(
+        img,
+        x * tileSize,
+        y * tileSize,
+        tileSize,
+        tileSize,
+        0,
+        0,
+        tileSize,
+        tileSize
+      );
       tiles.push({
         img: tile,
         x: x * tileSize + offsetX,
@@ -36,7 +47,7 @@ function setup() {
 }
 
 function draw() {
-  clear(); // transparent background
+  clear();
 
   for (let t of tiles) {
     let dx = t.x + tileSize / 2 - mouseX;
@@ -50,7 +61,6 @@ function draw() {
       t.vy += sin(angle) * force;
     }
 
-    // Spring return to original position
     let ax = (t.ox - t.x) * 0.1;
     let ay = (t.oy - t.y) * 0.1;
 
@@ -63,6 +73,6 @@ function draw() {
     t.x += t.vx;
     t.y += t.vy;
 
-    image(t.img, t.x, t.y);
+    image(t.img, int(t.x), int(t.y)); // Force integer draw positions
   }
 }
