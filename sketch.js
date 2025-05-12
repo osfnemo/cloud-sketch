@@ -6,10 +6,14 @@ let tileSize = 24;
 let lastMoved = 0;
 let mouseActive = false;
 let sweepProgress = 0;
+let sweepDuration = 120; // number of frames to run sweep
+let sweepFrame = 0;
 let sweepDone = false;
+let sweepTriggered = false;
+let sweepStartTime;
 
 function preload() {
-  img = loadImage("cloud.png?v=10");
+  img = loadImage("cloud.png?v=12");
 }
 
 function setup() {
@@ -17,6 +21,7 @@ function setup() {
   noSmooth();
   createCanvas(windowWidth, windowHeight);
   initTiles();
+  sweepStartTime = millis(); // record when to begin sweep timer
 }
 
 function windowResized() {
@@ -27,7 +32,7 @@ function windowResized() {
 function mouseMoved() {
   lastMoved = millis();
   mouseActive = true;
-  sweepDone = true; // cancel sweep once user interacts
+  sweepDone = true; // immediately end sweep
 }
 
 function initTiles() {
@@ -58,11 +63,17 @@ function initTiles() {
 function draw() {
   clear();
 
-  // Simulate a downward sweep on load before interaction
-  if (!mouseActive && !sweepDone && sweepProgress < height + 200) {
-    sweepProgress += 8;
-  } else {
-    sweepDone = true;
+  // Begin sweep only after 2 seconds (2000ms)
+  if (!mouseActive && !sweepTriggered && millis() - sweepStartTime > 2000) {
+    sweepTriggered = true;
+  }
+
+  // Animate sweep after delay
+  if (sweepTriggered && !sweepDone) {
+    sweepFrame++;
+    if (sweepFrame > sweepDuration) {
+      sweepDone = true;
+    }
   }
 
   let mx = constrain(mouseX, 0, width);
@@ -70,10 +81,10 @@ function draw() {
   let fade = constrain(map(millis() - lastMoved, 0, 1200, 1, 0), 0, 1);
 
   for (let t of tiles) {
-    if (!sweepDone) {
-      if (t.y < sweepProgress) {
-        t.vy += 4;
-      }
+    if (!sweepDone && sweepTriggered) {
+      // Downward sweep triggered after delay
+      let wave = sin((t.oy / height) * PI + sweepFrame * 0.1);
+      t.vy += wave * 2;
     } else if (mouseActive) {
       let dx = t.x + tileSize / 2 - mx;
       let dy = t.y + tileSize / 2 - my;
